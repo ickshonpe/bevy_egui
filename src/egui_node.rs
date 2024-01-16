@@ -11,14 +11,14 @@ use bevy::{
     render::{
         render_graph::{Node, NodeRunError, RenderGraphContext},
         render_resource::{
-            BindGroupLayout, BindGroupLayoutDescriptor, BindGroupLayoutEntry, BindingType,
+            BindGroupLayout,  BindGroupLayoutEntry, BindingType,
             BlendComponent, BlendFactor, BlendOperation, BlendState, Buffer, BufferAddress,
             BufferBindingType, BufferDescriptor, BufferUsages, ColorTargetState, ColorWrites,
             Extent3d, FragmentState, FrontFace, IndexFormat, LoadOp, MultisampleState, Operations,
             PipelineCache, PrimitiveState, RenderPassColorAttachment, RenderPassDescriptor,
             RenderPipelineDescriptor, SamplerBindingType, Shader, ShaderStages, ShaderType,
             SpecializedRenderPipeline, TextureDimension, TextureFormat, TextureSampleType,
-            TextureViewDimension, VertexBufferLayout, VertexFormat, VertexState, VertexStepMode,
+            TextureViewDimension, VertexBufferLayout, VertexFormat, VertexState, VertexStepMode, StoreOp,
         },
         renderer::{RenderContext, RenderDevice, RenderQueue},
         texture::{Image, ImageSampler},
@@ -43,9 +43,9 @@ impl FromWorld for EguiPipeline {
         let render_device = render_world.get_resource::<RenderDevice>().unwrap();
 
         let transform_bind_group_layout =
-            render_device.create_bind_group_layout(&BindGroupLayoutDescriptor {
-                label: Some("egui transform bind group layout"),
-                entries: &[BindGroupLayoutEntry {
+            render_device.create_bind_group_layout(
+                "egui transform bind group layout",
+                &[BindGroupLayoutEntry {
                     binding: 0,
                     visibility: ShaderStages::VERTEX,
                     ty: BindingType::Buffer {
@@ -55,12 +55,12 @@ impl FromWorld for EguiPipeline {
                     },
                     count: None,
                 }],
-            });
+            );
 
         let texture_bind_group_layout =
-            render_device.create_bind_group_layout(&BindGroupLayoutDescriptor {
-                label: Some("egui texture bind group layout"),
-                entries: &[
+            render_device.create_bind_group_layout(
+                "egui texture bind group layout",
+                &[
                     BindGroupLayoutEntry {
                         binding: 0,
                         visibility: ShaderStages::FRAGMENT,
@@ -78,7 +78,7 @@ impl FromWorld for EguiPipeline {
                         count: None,
                     },
                 ],
-            });
+            );
 
         EguiPipeline {
             transform_bind_group_layout,
@@ -345,10 +345,12 @@ impl Node for EguiNode {
                         resolve_target: None,
                         ops: Operations {
                             load: LoadOp::Load,
-                            store: true,
+                            store: StoreOp::Store,
                         },
                     })],
                     depth_stencil_attachment: None,
+                    timestamp_writes: None,
+                    occlusion_query_set: None,
                 });
 
         let Some(pipeline_id) = egui_pipelines.get(&extracted_window.entity) else {

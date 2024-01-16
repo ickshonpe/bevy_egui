@@ -12,7 +12,7 @@ use bevy::{
         keyboard::{KeyCode, KeyboardInput},
         mouse::{MouseButton, MouseButtonInput, MouseScrollUnit, MouseWheel},
         touch::TouchInput,
-        ButtonState, Input,
+        ButtonState, ButtonInput,
     },
     prelude::{Entity, EventReader, Query, Resource, Time},
     time::Real,
@@ -63,7 +63,7 @@ pub struct TouchId(pub Option<u64>);
 pub struct InputResources<'w, 's> {
     #[cfg(all(feature = "manage_clipboard", not(target_os = "android")))]
     pub egui_clipboard: Res<'w, crate::EguiClipboard>,
-    pub keyboard_input: Res<'w, Input<KeyCode>>,
+    pub keyboard_input: Res<'w, ButtonInput<KeyCode>>,
     #[system_param(ignore)]
     _marker: PhantomData<&'s ()>,
 }
@@ -460,7 +460,7 @@ pub fn process_output_system(
         set_icon();
 
         if ctx.has_requested_repaint() {
-            event.send(RequestRedraw)
+            event.send(RequestRedraw);
         }
 
         #[cfg(feature = "open_url")]

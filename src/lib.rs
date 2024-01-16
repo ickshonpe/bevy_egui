@@ -96,7 +96,7 @@ use bevy::{
 use bevy::{
     app::{App, Plugin, PostUpdate, PreStartup, PreUpdate},
     ecs::{
-        query::{QueryEntityError, WorldQuery},
+        query::{QueryEntityError, QueryData},
         schedule::apply_deferred,
         system::SystemParam,
     },
@@ -728,8 +728,8 @@ impl Plugin for EguiPlugin {
 }
 
 /// Queries all the Egui related components.
-#[derive(WorldQuery)]
-#[world_query(mutable)]
+#[derive(QueryData)]
+#[query_data(mutable)]
 pub struct EguiContextQuery {
     /// Window entity.
     pub window_entity: Entity,
